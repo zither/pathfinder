@@ -192,7 +192,7 @@ class Map
 
     protected function calMinCost()
     {
-        $values = array_values($this->costs);
+        //$values = array_values($this->costs);
         $this->minCost = 9;
     }
 
@@ -304,6 +304,12 @@ class Map
     }
 }
 
+
+if (count($_SERVER['argv']) < 3) {
+    echo "Usage: php map.php <loc1> <loc2>\n";
+    exit;
+}
+
 $from = $_SERVER['argv'][1];
 $to = $_SERVER['argv'][2];
 $locations = json_decode(file_get_contents("location.json"), true);
@@ -322,11 +328,11 @@ foreach ($locations['laenor'] as $name => $loc) {
 }
 
 if (is_string($from)) {
-    echo sprintf("Can't find %", $from), "\n";
+    printf("Can't find %s\n", $from);
     exit;
 }
 if (is_string($to)) {
-    echo sprintf("Can't find %", $to), "\n";
+    printf("Can't find %s\n", $to);
     exit;
 }
 

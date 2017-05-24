@@ -1,6 +1,7 @@
 <?php
 
 class Point {
+    public $name;
     public $index;
     public $id;
     public $x;
@@ -43,6 +44,11 @@ class Point {
     public function setIndex($index)
     {
         $this->index = $index;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 }
 
@@ -178,6 +184,16 @@ class Map
     protected $openList;
     protected $cmds = [];
     protected $minCost;
+    protected $reverseExits = [
+        'n' => 's',
+        's' => 'n',
+        'w' => 'e',
+        'e' => 'w',
+        'nw' => 'se',
+        'ne' => 'sw',
+        'sw' => 'ne',
+        'se' => 'nw',
+    ];
     
     public function __construct()
     {
@@ -231,7 +247,16 @@ class Map
                 }
                 $parent = isset($parent->parent) ? $parent->parent : null;
             }
+
+            $reverseExits = $this->reverseExits;
+            $reverseCmds = array_map(function($cmd) use ($reverseExits) {
+                return $reverseExits[$cmd]; 
+            }, array_reverse($this->cmds));
+
+            echo sprintf("%s -> %s\n", $a->name, $b->name);
             echo json_encode($this->parsePath($this->cmds), JSON_PRETTY_PRINT), "\n";
+            echo sprintf("%s -> %s\n", $b->name, $a->name);
+            echo json_encode($this->parsePath($reverseCmds), JSON_PRETTY_PRINT), "\n";
         } else {
             echo "Path not found.\n";
         }
@@ -269,6 +294,7 @@ class Map
             }
             $pathArray[] = implode($result, ";");
         }
+
         return $pathArray;
     }
 
@@ -320,10 +346,12 @@ foreach ($locations['laenor'] as $name => $loc) {
 
     if ($name == $from) {
         $from = new Point($loc['x'] - 1, $loc['y'] - 1);
+        $from->setName($name);
     }
 
     if ($name == $to) {
         $to = new Point($loc['x'] - 1, $loc['y'] - 1);
+        $to->setName($name);
     } 
 }
 
